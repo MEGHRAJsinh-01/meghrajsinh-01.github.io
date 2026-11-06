@@ -30,18 +30,40 @@
 </main>
 
   <script>
-    const status = document.getElementById("status");
+  const status = document.getElementById("status");
+  const loginButton = document.getElementById("login");
+  const result = document.getElementById("result");
 
-    try {
-      if (window.Pi) {
-        Pi.init({ version: "2.0", sandbox: true });
-        status.textContent = "Pi SDK detected. Initialization requested.";
-      } else {
-        status.textContent = "Pi SDK not detected yet.";
+  try {
+    Pi.init({
+      version: "2.0",
+      sandbox: true
+    });
+
+    status.textContent = "Pi SDK initialized successfully.";
+
+    loginButton.addEventListener("click", async function () {
+      result.textContent = "Signing in...";
+
+      try {
+        const auth = await Pi.authenticate(
+          ["username"],
+          function (payment) {
+            console.log("Incomplete payment:", payment);
+          }
+        );
+
+        result.textContent =
+          "Welcome, " + auth.user.username;
+      } catch (error) {
+        result.textContent =
+          "Sign in failed: " + error.message;
       }
-    } catch (error) {
-      status.textContent = "SDK initialization error.";
-    }
-  </script>
+    });
+
+  } catch (error) {
+    status.textContent = "SDK initialization error.";
+  }
+</script>
 </body>
 </html>
